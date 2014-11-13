@@ -2,25 +2,25 @@
 
 open System.Text.RegularExpressions
 
-type Args =
+type private Args =
     | Flag of char * Args
     | Other of char * Args
     | End
 
 let private letter = Regex(@"[A-Za-z]", RegexOptions.Compiled)
-let (|Letter|_|) (c : char) =
+let internal (|Letter|_|) (c : char) =
     if letter.IsMatch(string c) then
         Some c
     else
         None
 
-let (|Flag|_|) cs =
+let private (|Flag|_|) cs =
     match cs with
     | '-'::(Letter a)::t ->
         Some (a, t)
     | _ -> None
 
-let parseArgs (args : string) =
+let private parseArgs (args : string) =
     let rec inner cs =
         match cs with
         | Flag (flag, t) ->
@@ -31,7 +31,7 @@ let parseArgs (args : string) =
             End
     args |> List.ofSeq |> inner
 
-let cleanValue (value : char list) =
+let private cleanValue (value : char list) =
     let str =
         value
         |> List.rev
@@ -41,7 +41,7 @@ let cleanValue (value : char list) =
     | "" -> None
     | s -> Some s
 
-let buildArgMap args =
+let private buildArgMap args =
     let rec inner (map : Map<char, string option>) cFlag (cValue : char list option) args i =
         match args with
         | Args.Flag (f, a) ->
@@ -49,15 +49,19 @@ let buildArgMap args =
                 match cFlag, cValue with
                 | (Some flag, None) -> Map.add flag None map
                 | (Some flag, Some value) -> Map.add flag (cleanValue value) map
-                | (None, Some value) -> failwithf "Value with no flag found at index %i" i
+                | (None, Some value) -> failwithf "Value with no flag set, invalid parser state"
                 | None, None -> map
             inner newMap (Some f) None a (i + 1)
         | Other (c, a) ->
-            let newValue =
-                match cValue with
-                | Some value -> Some (c::value)
-                | None -> Some [c]
-            inner map cFlag newValue a (i + 1)
+            match cFlag with
+            | None ->
+                failwithf "Value with no flag found at index %i" i
+            | Some _ ->
+                let newValue =
+                    match cValue with
+                    | Some value -> Some (c::value)
+                    | None -> Some [c]
+                inner map cFlag newValue a (i + 1)
         | End ->
             match cFlag, cValue with
             | (Some flag, None) -> Map.add flag None map

@@ -58,6 +58,7 @@
       <Link>paket-files/ProvidedTypes.fs</Link>
     </Compile>
     <Compile Include="Parse.fs" />
+    <Compile Include="Provider.fs" />
     <None Include="paket.references" />
     <None Include="Script.fsx" />
   </ItemGroup>
