@@ -33,6 +33,18 @@
     <DocumentationFile>bin\Release\Targ.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fsi</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
@@ -43,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Library1.fs" />
+    <None Include="paket.references" />
     <None Include="Script.fsx" />
   </ItemGroup>
   <PropertyGroup>
